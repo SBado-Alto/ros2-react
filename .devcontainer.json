@@ -1,0 +1,6 @@
+{
+    "dockerFile": "Dockerfile",
+    "appPort": [
+        "3000:3000"
+    ]
+}
