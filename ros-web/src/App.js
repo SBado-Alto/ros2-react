@@ -18,8 +18,58 @@ import unicorn from "./unicorn.gif";
 import rainbow from "./rainbow.gif";
 
 function App() {
-  const ros = new ROSLIB.Ros({
-    url : 'ws://10.42.0.1:9090'
+
+  var ws = undefined;
+
+  const connect = () => {
+    ws = new WebSocket('ws://localhost:9191');
+  
+    ws.onmessage = function(e) {
+      console.log('Message:', e.data);
+    };
+  
+    ws.onclose = function(e) {
+      console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
+      setTimeout(function() {
+        connect();
+      }, 1000);
+    };
+  
+    ws.onerror = function(err) {
+      console.error('Socket encountered error: ', err.message, 'Closing socket');
+      ws.close();
+    };
+  }
+
+  const move = (x, y, z) => {
+    if (ws.readyState !== 1)
+      return;
+
+    const msg = {
+      type: "move",
+      x: parseFloat(x),
+      y: parseFloat(y),
+      z: parseFloat(z)
+    };
+    
+    ws.send(JSON.stringify(msg));
+  }
+
+  const manualMode = () => {
+    if (!ws.OPEN)
+      return;
+
+    const msg = {
+      type: "manual_mode"
+    };
+    
+    ws.send(JSON.stringify(msg));
+  }
+
+  connect();
+
+  /*const ros = new ROSLIB.Ros({
+    url : 'ws://127.0.0.1:9090'
   });
 
   const cmdVel = new ROSLIB.Topic({
@@ -34,7 +84,7 @@ function App() {
     serviceType : 'std_srvs/Trigger'
   });
 
-  const move = (lvx, lvy, avz) => {
+  const _move = (lvx, lvy, avz) => {
     var twist = new ROSLIB.Message({
       linear : {
         x : parseFloat(lvx),
@@ -58,7 +108,7 @@ function App() {
         + ': '
         + result.res);
     });
-  }
+  }*/
 
   const Item = styled(Sheet)(({ theme }) => ({
     backgroundColor: "pink",
@@ -181,7 +231,7 @@ function App() {
               <Grid xs={6} sx={{ flexGrow: 1 }}>
                 <Item>
                   <Stack spacing={1}>
-                    <Button color="danger" onClick={() => move(0,0,0.5)}>Place Rotation (z = 0.3)</Button>
+                    <Button color="danger" onClick={() => move(0,0,0.3)}>Place Rotation (z = 0.3)</Button>
                     <Button color="danger" onClick={() => move(0,0.3, 0)}>Crab Walk Left (y = 0.3)</Button>
                     <Button color="danger" onClick={() => move(0,-0.3,0)}>Crab Walk Right (y = -0.3)</Button>
                     <Button color="danger" onClick={() => manualMode()}>Manual Mode</Button>
