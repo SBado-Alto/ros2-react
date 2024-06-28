@@ -19,7 +19,7 @@ import rainbow from "./rainbow.gif";
 
 function App() {
   const ros = new ROSLIB.Ros({
-    url : 'ws://10.42.0.1:9090'
+    url : 'ws://127.0.0.1:9090'
   });
 
   const cmdVel = new ROSLIB.Topic({
