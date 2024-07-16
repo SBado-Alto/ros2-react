@@ -19,7 +19,7 @@ import rainbow from "./rainbow.gif";
 
 function App() {
   const ros = new ROSLIB.Ros({
-    url : 'ws://127.0.0.1:9090'
+    url : 'ws://10.48.0.1:9090'
   });
 
   const cmdVel = new ROSLIB.Topic({
@@ -73,9 +73,12 @@ function App() {
     <CssVarsProvider>
       <Sheet
         sx={{
-        width: 1000,
+        maxWidth: 1000,
         mx: 'auto', // margin left & right
-        my: 4, // margin top & bottom
+        my:  {
+          xs: 0,
+          sm: 4
+        }, // margin top & bottom
         py: 3, // padding top & bottom
         px: 2, // padding left & right
         display: 'flex',
@@ -93,25 +96,22 @@ function App() {
           <img src={unicorn} width={50} height={50} alt=""/>
         </Stack>
 
-        <Grid container spacing={2}  alignItems="center"
+        <Grid container spacing={3}  alignItems="center"
           sx={{
             '--Grid-borderWidth': '1px',
             borderTop: 'var(--Grid-borderWidth) solid',
             borderColor: 'divider',
           }}>
-          <Grid xs={6}>
+          <Grid xs={12} md={6}>
             <Item>
                 <form
                   onSubmit={(event) => {
                     event.preventDefault();
                     const formData = new FormData(event.currentTarget);
-                    console.log(formData);
-                    //const formJson = Object.fromEntries((formData).entries());
-                    //alert(JSON.stringify(formJson));
                     move(formData.get("lvx"), formData.get("lvy"), formData.get("avz"));
                   }}
                 >
-                  <Stack spacing={1}>
+                  <Stack spacing={{ xs: 1, md: 2 }}>
                     <FormControl>
                       <FormLabel>Linear Velocity X</FormLabel>
                       <Input
@@ -144,7 +144,13 @@ function App() {
                         }}
                       />
                     </FormControl>
-                    <FormControl sx={{ pb: 2 }}>
+                    <FormControl 
+                      sx={{
+                        pb: {
+                          xs: 1,
+                          md: 2
+                        }
+                      }}>
                       <FormLabel>Angular Velocity Z</FormLabel>
                       <Input
                         name="avz"
@@ -160,16 +166,16 @@ function App() {
                         }}
                       />
                     </FormControl>
-                    <Button sx={{ mt: 30 }} type="submit" color="danger">
+                    <Button type="submit" color="danger">
                       Send
                     </Button>
                   </Stack>
                 </form>
             </Item>
           </Grid>
-          <Grid xs={6}s>
-            <Grid container spacing={2}>
-              <Grid xs={6} sx={{ flexGrow: 1 }}>
+          <Grid xs={12} md={6}>
+            <Grid container spacing={2} alignItems="center" justifyContent="center">
+              <Grid xs={12} md={6} sx={{ flexGrow: 1 }}>
                 <Item>
                   <Stack spacing={1}>
                     <Button color="danger" onClick={() => move(0.5,0,0)}>Forward (x = 0.5)</Button>
@@ -178,13 +184,13 @@ function App() {
                   </Stack>
                 </Item>
               </Grid>
-              <Grid xs={6} sx={{ flexGrow: 1 }}>
+              <Grid xs={12} md={6} sx={{ flexGrow: 1 }}>
                 <Item>
                   <Stack spacing={1}>
                     <Button color="danger" onClick={() => move(0,0,0.5)}>Place Rotation (z = 0.3)</Button>
                     <Button color="danger" onClick={() => move(0,0.3, 0)}>Crab Walk Left (y = 0.3)</Button>
                     <Button color="danger" onClick={() => move(0,-0.3,0)}>Crab Walk Right (y = -0.3)</Button>
-                    <Button color="danger" onClick={() => manualMode()}>Manual Mode</Button>
+                    <Button color="danger" onClick={() => manualMode()}>Switch Auto/Manual Mode</Button>
                   </Stack>
                 </Item>
               </Grid>
